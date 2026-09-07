@@ -121,7 +121,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Warehouse, Lock, Mail, Eye, EyeOff } from "lucide-react";
+import {
+  Warehouse,
+  Lock,
+  Mail,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import axios from "axios";
 
 const AdminLogin = () => {
@@ -136,6 +142,9 @@ const AdminLogin = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // ============================================
+  // INPUT CHANGE
+  // ============================================
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -145,158 +154,107 @@ const AdminLogin = () => {
     setError("");
   };
 
-  // const handleSubmit = async (e) => {
+  // ============================================
+  // LOGIN
+  // ============================================
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  //   e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  //   setLoading(true);
-  //   setError("");
-
-  //   try {
-  //     // Import admin login service
-  //     const { adminLogin } = await import("../services/adminService");
-
-  //     const result = await adminLogin(formData);
-
-  //     console.log("LOGIN RESPONSE:", result);
-
-  //     // Support different possible response structures
-  //     const token =
-  //       result?.token ||
-  //       result?.data?.token ||
-  //       result?.accessToken ||
-  //       result?.data?.accessToken;
-
-  //     const admin =
-  //       result?.admin ||
-  //       result?.data?.admin ||
-  //       result?.user ||
-  //       result?.data?.user;
-
-  //     // Check login success
-  //     if (result?.success === true || token) {
-  //       // Save token if backend sends one
-  //       if (token) {
-  //         localStorage.setItem("adminToken", token);
-
-  //         axios.defaults.headers.common[
-  //           "Authorization"
-  //         ] = `Bearer ${token}`;
-  //       }
-
-  //       // Save admin information
-  //       if (admin) {
-  //         localStorage.setItem("admin", JSON.stringify(admin));
-  //       }
-
-  //       console.log("✅ Admin login successful");
-
-  //       // Go to dashboard
-  //       navigate("/admin-dashboard", { replace: true });
-
-  //       return;
-  //     }
-
-  //     // Login failed
-  //     setError(
-  //       result?.message ||
-  //         result?.error ||
-  //         "Invalid email or password"
-  //     );
-  //   } catch (err) {
-  //     console.error("LOGIN ERROR:", err);
-
-  //     if (err.response) {
-  //       console.error("STATUS:", err.response.status);
-  //       console.error("DATA:", err.response.data);
-
-  //       setError(
-  //         err.response.data?.message ||
-  //           "Login failed. Please check your email and password."
-  //       );
-  //     } else if (err.request) {
-  //       setError(
-  //         "Unable to connect to server. Please try again."
-  //       );
-  //     } else {
-  //       setError("Something went wrong. Please try again.");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  setLoading(true);
-  setError("");
-
-  try {
-    const { adminLogin } = await import("../services/adminService");
-
-    const result = await adminLogin(formData);
-
-    console.log("LOGIN RESULT:", result);
-
-    if (result.success) {
-      const token = result.token;
-
-      if (!token) {
-        console.error(
-          "Login successful but token is missing:",
-          result
-        );
-
-        setError(
-          "Login successful, but authentication token is missing."
-        );
-
-        return;
-      }
-
-      // Save token
-      localStorage.setItem("adminToken", token);
-
-      // Save admin
-      if (result.admin) {
-        localStorage.setItem(
-          "admin",
-          JSON.stringify(result.admin)
-        );
-      }
-
-      // Set Authorization header
-      axios.defaults.headers.common["Authorization"] =
-        `Bearer ${token}`;
-
-      console.log("✅ Token saved");
-
-      // Navigate to dashboard
-      navigate("/admin-dashboard", {
-        replace: true,
-      });
-    } else {
-      setError(
-        result.message || "Invalid email or password"
+    try {
+      const { adminLogin } = await import(
+        "../services/adminService"
       );
+
+      const result = await adminLogin(formData);
+
+      console.log("LOGIN RESULT:", result);
+
+      // ==========================================
+      // LOGIN SUCCESS
+      // ==========================================
+      if (result.success === true) {
+        const token = result.token;
+
+        // Check token
+        if (!token) {
+          console.error(
+            "Login successful but token is missing:",
+            result
+          );
+
+          setError(
+            "Login successful, but authentication token is missing."
+          );
+
+          return;
+        }
+
+        // ========================================
+        // SAVE TOKEN
+        // ========================================
+        localStorage.setItem(
+          "adminToken",
+          token
+        );
+
+        // ========================================
+        // SAVE ADMIN
+        // ========================================
+        if (result.admin) {
+          localStorage.setItem(
+            "admin",
+            JSON.stringify(result.admin)
+          );
+        }
+
+        // ========================================
+        // SET AXIOS AUTHORIZATION
+        // ========================================
+        axios.defaults.headers.common[
+          "Authorization"
+        ] = `Bearer ${token}`;
+
+        console.log("✅ LOGIN SUCCESS");
+        console.log(
+          "✅ TOKEN SAVED:",
+          localStorage.getItem("adminToken")
+        );
+
+        // ========================================
+        // REDIRECT TO DASHBOARD
+        // ========================================
+        navigate("/admin-dashboard", {
+          replace: true,
+        });
+      } else {
+        setError(
+          result.message ||
+            "Invalid email or password"
+        );
+      }
+    } catch (err) {
+      console.error("❌ LOGIN ERROR:", err);
+
+      console.error(
+        "SERVER RESPONSE:",
+        err.response?.data
+      );
+
+      setError(
+        err.response?.data?.message ||
+          "Unable to login. Please try again."
+      );
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("LOGIN ERROR:", err);
+  };
 
-    console.error(
-      "SERVER RESPONSE:",
-      err.response?.data
-    );
-
-    setError(
-      err.response?.data?.message ||
-        "Unable to login. Please try again."
-    );
-  } finally {
-    setLoading(false);
-  }
-};
-  
+  // ============================================
+  // UI
+  // ============================================
   return (
     <div className="min-h-screen bg-stone-950 flex items-center justify-center font-sans relative overflow-hidden">
 
@@ -305,9 +263,16 @@ const handleSubmit = async (e) => {
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(220,38,38,0.1),transparent_60%)]"></div>
 
+      {/* Login Card */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{
+          opacity: 0,
+          y: 30,
+        }}
+        animate={{
+          opacity: 1,
+          y: 0,
+        }}
         className="relative z-10 w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 shadow-2xl"
       >
 
@@ -329,7 +294,10 @@ const handleSubmit = async (e) => {
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6"
+        >
 
           {/* Error */}
           {error && (
@@ -376,7 +344,11 @@ const handleSubmit = async (e) => {
               <Lock className="absolute left-4 top-3.5 w-5 h-5 text-stone-500" />
 
               <input
-                type={showPassword ? "text" : "password"}
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
@@ -389,7 +361,9 @@ const handleSubmit = async (e) => {
               <button
                 type="button"
                 onClick={() =>
-                  setShowPassword(!showPassword)
+                  setShowPassword(
+                    !showPassword
+                  )
                 }
                 className="absolute right-4 top-3.5 text-stone-500 hover:text-white transition-colors"
               >
@@ -410,12 +384,15 @@ const handleSubmit = async (e) => {
             disabled={loading}
             className="w-full bg-red-700 text-white font-bold py-4 rounded-xl text-xs uppercase tracking-widest hover:bg-red-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading
+              ? "Signing in..."
+              : "Sign In"}
           </button>
 
         </form>
 
       </motion.div>
+
     </div>
   );
 };

@@ -120,9 +120,15 @@
 
 import axios from "axios";
 
-const API_BASE_URL = "https://vardha-project-38mt.onrender.com/api";
+// ============================================
+// BACKEND API URL
+// ============================================
+const API_BASE_URL =
+  "https://vardha-project-38mt.onrender.com/api";
 
-// Get token from localStorage
+// ============================================
+// GET ADMIN TOKEN
+// ============================================
 const getAuthHeaders = () => {
   const token = localStorage.getItem("adminToken");
 
@@ -133,19 +139,18 @@ const getAuthHeaders = () => {
     : {};
 };
 
-/* =====================================================
-   ADMIN LOGIN
-===================================================== */
-
+// ============================================
+// ADMIN LOGIN
+// ============================================
 export const adminLogin = async (credentials) => {
   const response = await axios.post(
     `${API_BASE_URL}/auth/login`,
     credentials,
     {
-      withCredentials: true,
       headers: {
         "Content-Type": "application/json",
       },
+      withCredentials: true,
     }
   );
 
@@ -154,15 +159,17 @@ export const adminLogin = async (credentials) => {
   return response.data;
 };
 
-/* =====================================================
-   ADMIN ENQUIRIES
-===================================================== */
-
+// ============================================
+// ADMIN ENQUIRIES
+// ============================================
 export const getAdminEnquiries = async () => {
-  const response = await axios.get(`${API_BASE_URL}/admin/`, {
-    headers: getAuthHeaders(),
-    withCredentials: true,
-  });
+  const response = await axios.get(
+    `${API_BASE_URL}/admin/`,
+    {
+      headers: getAuthHeaders(),
+      withCredentials: true,
+    }
+  );
 
   return response.data;
 };
@@ -192,10 +199,9 @@ export const deleteEnquiry = async (id) => {
   return response.data;
 };
 
-/* =====================================================
-   FAQ
-===================================================== */
-
+// ============================================
+// FAQ
+// ============================================
 export const getAdminFAQs = async () => {
   const response = await axios.get(
     `${API_BASE_URL}/admin/faqs/admin`,
@@ -246,10 +252,9 @@ export const deleteFAQ = async (id) => {
   return response.data;
 };
 
-/* =====================================================
-   PRICING
-===================================================== */
-
+// ============================================
+// PRICING
+// ============================================
 export const getPricingSettings = async () => {
   const response = await axios.get(
     `${API_BASE_URL}/admin/pricing/admin`,
@@ -275,10 +280,9 @@ export const updatePricingSettings = async (settings) => {
   return response.data;
 };
 
-/* =====================================================
-   CONTACTS
-===================================================== */
-
+// ============================================
+// CONTACTS
+// ============================================
 export const getAdminContacts = async () => {
   const response = await axios.get(
     `${API_BASE_URL}/admin/contacts`,
@@ -303,10 +307,9 @@ export const deleteContact = async (id) => {
   return response.data;
 };
 
-/* =====================================================
-   EXPORT
-===================================================== */
-
+// ============================================
+// EXPORT
+// ============================================
 export default {
   adminLogin,
   getAdminEnquiries,
