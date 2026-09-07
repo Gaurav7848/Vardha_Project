@@ -57,7 +57,7 @@ useEffect(() => {
       try {
         setLoading(true);
         // Changed to GET and removed body/formData
-        const response = await fetch(`https://wahrehousing-project.onrender.com/api/products/${productId}`, {
+        const response = await fetch(`https://vardha-project-38mt.onrender.com/api/products/${productId}`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
