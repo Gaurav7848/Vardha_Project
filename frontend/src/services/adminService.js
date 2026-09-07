@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = "https://vardha-project-38mt.onrender.com/api";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("adminToken");
