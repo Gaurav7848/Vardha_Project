@@ -9,8 +9,8 @@ const createAdmin = async () => {
 
     const adminData = {
       name: 'Vardha Admin',
-      email: 'admin12@vardha.com',
-      password: 'Vardha@2026',
+      email: 'admin@vardha.com',
+      password: 'Vardha@1234',
       role: 'admin',
       company: 'Vardha Warehousing',
     };
